@@ -814,7 +814,7 @@ _CONFIGS = [
     ),
     TrainConfig(
         name="pi05_arx",
-        model=pi0_config.Pi0Config(pi05=True, action_horizon=10, discrete_state_input=False),
+        model=pi0_config.Pi0Config(pi05=True, action_horizon=30, discrete_state_input=False),
         data=LeRobotArxDataConfig(
             repo_id="/mnt/d/share/pick_X_times_filterd_twice",
             assets=AssetsConfig(asset_id="arx"),

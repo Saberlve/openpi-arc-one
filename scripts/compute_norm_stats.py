@@ -43,7 +43,7 @@ class ParquetLowDimLeRobotDataset(_data_loader.Dataset):
         info = json.loads((self._root / "meta" / "info.json").read_text())
         self._episodes = []
         self._cumulative_lengths = []
-        total = 0
+        total_frames = 0
         # Iterate through all episodes and only read the state and action columns
         for episode_index in range(info["total_episodes"]):
             episode_chunk = episode_index // info["chunks_size"]
