@@ -88,6 +88,11 @@ class DataConfig:
     # LeRobot dataset is using different keys to represent the action.
     action_sequence_keys: Sequence[str] = ("actions",)
 
+    # Video backend to use for LeRobot datasets. If None, LeRobot chooses its default backend.
+    video_backend: str | None = None
+    # Tolerance for matching LeRobot video frames by timestamp.
+    video_tolerance_s: float = 1e-4
+
     # If true, will use the LeRobot dataset task to define the prompt.
     prompt_from_task: bool = False
 
@@ -813,7 +818,7 @@ _CONFIGS = [
         data=LeRobotArxDataConfig(
             repo_id="/mnt/d/share/pick_X_times_filterd_twice",
             assets=AssetsConfig(asset_id="arx"),
-            base_config=DataConfig(prompt_from_task=True),
+            base_config=DataConfig(prompt_from_task=True, video_backend="pyav", video_tolerance_s=1.0 / 30.0 + 1e-6),
         ),
         batch_size=64,
         lr_schedule=_optimizer.CosineDecaySchedule(

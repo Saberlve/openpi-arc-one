@@ -34,23 +34,24 @@ class ArxInputs(transforms.DataTransformFn):
     model_type: _model.ModelType
 
     def __call__(self, data: dict) -> dict:
-        base_image = _parse_image(data["observation/images/head"])
-        left_wrist_image = _parse_image(data["observation/images/left_wrist"])
-        right_wrist_image = _parse_image(data["observation/images/right_wrist"])
-
         inputs = {
             "state": np.asarray(data["observation/state"]),
-            "image": {
+        }
+
+        if "observation/images/head" in data:
+            base_image = _parse_image(data["observation/images/head"])
+            left_wrist_image = _parse_image(data["observation/images/left_wrist"])
+            right_wrist_image = _parse_image(data["observation/images/right_wrist"])
+            inputs["image"] = {
                 "base_0_rgb": base_image,
                 "left_wrist_0_rgb": left_wrist_image,
                 "right_wrist_0_rgb": right_wrist_image,
-            },
-            "image_mask": {
+            }
+            inputs["image_mask"] = {
                 "base_0_rgb": np.True_,
                 "left_wrist_0_rgb": np.True_,
                 "right_wrist_0_rgb": np.True_,
-            },
-        }
+            }
 
         if "actions" in data:
             inputs["actions"] = np.asarray(data["actions"])

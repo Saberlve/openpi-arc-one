@@ -39,6 +39,19 @@ def test_arx_outputs_returns_all_14_action_dims():
     assert outputs["actions"].shape == (10, 14)
 
 
+def test_arx_inputs_supports_low_dim_only_data_for_norm_stats():
+    inputs = arx_policy.ArxInputs(model_type=_model.ModelType.PI05)(
+        {
+            "observation/state": np.arange(14, dtype=np.float32),
+            "actions": np.ones((10, 14), dtype=np.float32),
+        }
+    )
+
+    assert set(inputs) == {"state", "actions"}
+    np.testing.assert_array_equal(inputs["state"], np.arange(14, dtype=np.float32))
+    np.testing.assert_array_equal(inputs["actions"], np.ones((10, 14), dtype=np.float32))
+
+
 def test_pi05_arx_config_points_to_local_lerobot_dataset(monkeypatch):
     class FakeModelTransformFactory:
         def __call__(self, model_config):
@@ -53,6 +66,8 @@ def test_pi05_arx_config_points_to_local_lerobot_dataset(monkeypatch):
     assert data_config.asset_id == "arx"
     assert data_config.prompt_from_task
     assert data_config.action_sequence_keys == ("action",)
+    assert data_config.video_backend == "pyav"
+    assert data_config.video_tolerance_s > 1.0 / 30.0
 
 
 def test_lerobot_v21_list_feature_metadata_is_supported():

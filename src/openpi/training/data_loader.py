@@ -19,6 +19,21 @@ import openpi.transforms as _transforms
 T_co = TypeVar("T_co", covariant=True)
 
 
+def _register_lerobot_v21_list_feature_alias() -> None:
+    """Allow datasets 3.x to read LeRobot v2.1 parquet metadata written with `_type: List`."""
+    try:
+        import datasets.features.features as hf_features
+    except ImportError:
+        return
+
+    feature_types = getattr(hf_features, "_FEATURE_TYPES", None)
+    if feature_types is not None and "List" not in feature_types:
+        feature_types["List"] = hf_features.Sequence
+
+
+_register_lerobot_v21_list_feature_alias()
+
+
 class Dataset(Protocol[T_co]):
     """Interface for a dataset with random access."""
 
@@ -143,6 +158,8 @@ def create_torch_dataset(
         delta_timestamps={
             key: [t / dataset_meta.fps for t in range(action_horizon)] for key in data_config.action_sequence_keys
         },
+        video_backend=data_config.video_backend,
+        tolerance_s=data_config.video_tolerance_s,
     )
 
     if data_config.prompt_from_task:
