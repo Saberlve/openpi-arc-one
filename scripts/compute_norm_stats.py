@@ -5,6 +5,8 @@ will compute the mean and standard deviation of the data in the dataset and save
 to the config assets directory.
 """
 
+import pathlib
+
 import numpy as np
 import tqdm
 import tyro
@@ -19,6 +21,12 @@ import openpi.transforms as transforms
 class RemoveStrings(transforms.DataTransformFn):
     def __call__(self, x: dict) -> dict:
         return {k: v for k, v in x.items() if not np.issubdtype(np.asarray(v).dtype, np.str_)}
+
+
+def get_output_path(config: _config.TrainConfig, data_config: _config.DataConfig) -> pathlib.Path:
+    if data_config.asset_id is None:
+        raise ValueError("Data config must have an asset_id to save normalization stats.")
+    return config.assets_dirs / data_config.asset_id
 
 
 def create_torch_dataloader(
@@ -108,7 +116,7 @@ def main(config_name: str, max_frames: int | None = None):
 
     norm_stats = {key: stats.get_statistics() for key, stats in stats.items()}
 
-    output_path = config.assets_dirs / data_config.repo_id
+    output_path = get_output_path(config, data_config)
     print(f"Writing stats to: {output_path}")
     normalize.save(output_path, norm_stats)
 

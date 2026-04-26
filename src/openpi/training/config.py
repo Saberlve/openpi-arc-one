@@ -18,6 +18,7 @@ import openpi.models.pi0_config as pi0_config
 import openpi.models.pi0_fast as pi0_fast
 import openpi.models.tokenizer as _tokenizer
 import openpi.policies.aloha_policy as aloha_policy
+import openpi.policies.arx_policy as arx_policy
 import openpi.policies.droid_policy as droid_policy
 import openpi.policies.libero_policy as libero_policy
 import openpi.shared.download as _download
@@ -352,6 +353,51 @@ class LeRobotLiberoDataConfig(DataConfigFactory):
             repack_transforms=repack_transform,
             data_transforms=data_transforms,
             model_transforms=model_transforms,
+        )
+
+
+@dataclasses.dataclass(frozen=True)
+class LeRobotArxDataConfig(DataConfigFactory):
+    """Data config for the local ARX/Acone dual-arm LeRobot dataset."""
+
+    use_delta_joint_actions: bool = True
+
+    @override
+    def create(self, assets_dirs: pathlib.Path, model_config: _model.BaseModelConfig) -> DataConfig:
+        repack_transform = _transforms.Group(
+            inputs=[
+                _transforms.RepackTransform(
+                    {
+                        "observation/images/head": "observation.images.head",
+                        "observation/images/left_wrist": "observation.images.left_wrist",
+                        "observation/images/right_wrist": "observation.images.right_wrist",
+                        "observation/state": "observation.state",
+                        "actions": "action",
+                        "prompt": "prompt",
+                    }
+                )
+            ]
+        )
+
+        data_transforms = _transforms.Group(
+            inputs=[arx_policy.ArxInputs(model_type=model_config.model_type)],
+            outputs=[arx_policy.ArxOutputs()],
+        )
+        if self.use_delta_joint_actions:
+            delta_action_mask = _transforms.make_bool_mask(6, -1, 6, -1)
+            data_transforms = data_transforms.push(
+                inputs=[_transforms.DeltaActions(delta_action_mask)],
+                outputs=[_transforms.AbsoluteActions(delta_action_mask)],
+            )
+
+        model_transforms = ModelTransformFactory()(model_config)
+
+        return dataclasses.replace(
+            self.create_base_config(assets_dirs, model_config),
+            repack_transforms=repack_transform,
+            data_transforms=data_transforms,
+            model_transforms=model_transforms,
+            action_sequence_keys=("action",),
         )
 
 
@@ -759,6 +805,26 @@ _CONFIGS = [
         ema_decay=0.999,
         weight_loader=weight_loaders.CheckpointWeightLoader("gs://openpi-assets/checkpoints/pi05_base/params"),
         pytorch_weight_path="/path/to/your/pytorch_weight_path",
+        num_train_steps=30_000,
+    ),
+    TrainConfig(
+        name="pi05_arx",
+        model=pi0_config.Pi0Config(pi05=True, action_horizon=10, discrete_state_input=False),
+        data=LeRobotArxDataConfig(
+            repo_id="/mnt/d/share/pick_X_times_filterd_twice",
+            assets=AssetsConfig(asset_id="arx"),
+            base_config=DataConfig(prompt_from_task=True),
+        ),
+        batch_size=64,
+        lr_schedule=_optimizer.CosineDecaySchedule(
+            warmup_steps=1_000,
+            peak_lr=5e-5,
+            decay_steps=30_000,
+            decay_lr=5e-5,
+        ),
+        optimizer=_optimizer.AdamW(clip_gradient_norm=1.0),
+        ema_decay=0.999,
+        weight_loader=weight_loaders.CheckpointWeightLoader("gs://openpi-assets/checkpoints/pi05_base/params"),
         num_train_steps=30_000,
     ),
     #
