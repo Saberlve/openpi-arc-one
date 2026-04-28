@@ -16,6 +16,8 @@ set -euo pipefail
 #   HEAD_CAMERA         - Head camera device path (default: /dev/video10)
 #   LEFT_WRIST_CAMERA   - Left wrist camera device path (default: /dev/video11)
 #   RIGHT_WRIST_CAMERA  - Right wrist camera device path (default: /dev/video12)
+#   ARX_MAX_SAFE_JOINT_STEP   - Max allowed per-step joint jump in radians (default: 0.03)
+#   ARX_MAX_SAFE_GRIPPER_STEP - Max allowed per-step gripper jump (default: 0.8)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -43,9 +45,12 @@ TASK_PROMPT="${TASK_PROMPT:-Pick up the black pouch three times, then touch the 
 HEAD_CAMERA="${HEAD_CAMERA:-/dev/video10}"
 LEFT_WRIST_CAMERA="${LEFT_WRIST_CAMERA:-/dev/video11}"
 RIGHT_WRIST_CAMERA="${RIGHT_WRIST_CAMERA:-/dev/video12}"
+ARX_MAX_SAFE_JOINT_STEP="${ARX_MAX_SAFE_JOINT_STEP:-0.03}"
+ARX_MAX_SAFE_GRIPPER_STEP="${ARX_MAX_SAFE_GRIPPER_STEP:-0.8}"
 ROS_LOG_DIR="${ROS_LOG_DIR:-/tmp/openpi-arx-ros-log}"
 MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/openpi-arx-matplotlib}"
 export ROS_LOG_DIR MPLCONFIGDIR
+export ARX_MAX_SAFE_JOINT_STEP ARX_MAX_SAFE_GRIPPER_STEP
 mkdir -p "${ROS_LOG_DIR}" "${MPLCONFIGDIR}"
 
 CONDA_ACT_PYTHON="/home/ubuntu/Package/miniconda/envs/act/bin/python"
@@ -72,6 +77,8 @@ echo "============================================"
 echo "  Server:      ${OPENPI_HOST}:${OPENPI_PORT}"
 echo "  Robot:       ${ROBOT_TYPE}"
 echo "  Frame rate:  ${FRAME_RATE}"
+echo "  Joint step:  ${ARX_MAX_SAFE_JOINT_STEP}"
+echo "  Grip step:   ${ARX_MAX_SAFE_GRIPPER_STEP}"
 echo "  ROS config:  ${ARX_CONFIG}"
 echo "  Task:        ${TASK_PROMPT}"
 echo "============================================"

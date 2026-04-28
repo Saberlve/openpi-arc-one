@@ -53,6 +53,14 @@ def test_infer_client_adds_openpi_client_package_to_pythonpath():
     assert 'export PYTHONPATH="${OPENPI_CLIENT_PY}:${ARX_MSGS_PY}:${PYTHONPATH:-}"' in script
 
 
+def test_infer_client_exports_default_action_safety_limits():
+    script = (ROOT / "scripts" / "infer_arx_client.sh").read_text()
+
+    assert 'ARX_MAX_SAFE_JOINT_STEP="${ARX_MAX_SAFE_JOINT_STEP:-0.03}"' in script
+    assert 'ARX_MAX_SAFE_GRIPPER_STEP="${ARX_MAX_SAFE_GRIPPER_STEP:-0.8}"' in script
+    assert "export ARX_MAX_SAFE_JOINT_STEP ARX_MAX_SAFE_GRIPPER_STEP" in script
+
+
 def test_arx_config_reads_slave_feedback_and_publishes_master_commands():
     config = yaml.safe_load((ROOT / "third_party" / "ARX-ONE" / "act" / "data" / "config.yaml").read_text())
 
