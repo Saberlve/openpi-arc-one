@@ -17,7 +17,7 @@ set -euo pipefail
 #   LEFT_WRIST_CAMERA   - Left wrist camera device path (default: /dev/video11)
 #   RIGHT_WRIST_CAMERA  - Right wrist camera device path (default: /dev/video12)
 #   ARX_MAX_SAFE_JOINT_STEP   - Max allowed per-step joint jump in radians (default: 0.03)
-#   ARX_MAX_SAFE_GRIPPER_STEP - Max allowed per-step gripper jump (default: 0.8)
+#   ARX_MAX_SAFE_GRIPPER_STEP - Max allowed per-step gripper jump (default: 3.0)
 #   OPENPI_DEBUG_DIR    - Directory for saved observation images (default: ./openpi-arx-debug)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -47,7 +47,7 @@ HEAD_CAMERA="${HEAD_CAMERA:-/dev/video10}"
 LEFT_WRIST_CAMERA="${LEFT_WRIST_CAMERA:-/dev/video11}"
 RIGHT_WRIST_CAMERA="${RIGHT_WRIST_CAMERA:-/dev/video12}"
 ARX_MAX_SAFE_JOINT_STEP="${ARX_MAX_SAFE_JOINT_STEP:-0.03}"
-ARX_MAX_SAFE_GRIPPER_STEP="${ARX_MAX_SAFE_GRIPPER_STEP:-0.8}"
+ARX_MAX_SAFE_GRIPPER_STEP="${ARX_MAX_SAFE_GRIPPER_STEP:-3.0}"
 OPENPI_DEBUG_IO="${OPENPI_DEBUG_IO:-1}"
 OPENPI_DEBUG_DIR="${OPENPI_DEBUG_DIR:-${PROJECT_ROOT}/openpi-arx-debug}"
 ROS_LOG_DIR="${ROS_LOG_DIR:-/tmp/openpi-arx-ros-log}"

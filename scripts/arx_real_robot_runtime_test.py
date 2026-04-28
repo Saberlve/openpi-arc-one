@@ -57,7 +57,7 @@ def test_infer_client_exports_default_action_safety_limits():
     script = (ROOT / "scripts" / "infer_arx_client.sh").read_text()
 
     assert 'ARX_MAX_SAFE_JOINT_STEP="${ARX_MAX_SAFE_JOINT_STEP:-0.03}"' in script
-    assert 'ARX_MAX_SAFE_GRIPPER_STEP="${ARX_MAX_SAFE_GRIPPER_STEP:-0.8}"' in script
+    assert 'ARX_MAX_SAFE_GRIPPER_STEP="${ARX_MAX_SAFE_GRIPPER_STEP:-3.0}"' in script
     assert "export ARX_MAX_SAFE_JOINT_STEP ARX_MAX_SAFE_GRIPPER_STEP" in script
 
 
