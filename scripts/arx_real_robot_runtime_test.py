@@ -61,6 +61,17 @@ def test_infer_client_exports_default_action_safety_limits():
     assert "export ARX_MAX_SAFE_JOINT_STEP ARX_MAX_SAFE_GRIPPER_STEP" in script
 
 
+def test_arx_scripts_write_debug_outputs_under_project_root():
+    infer_script = (ROOT / "scripts" / "infer_arx_client.sh").read_text()
+    serve_script = (ROOT / "scripts" / "serve_arx.sh").read_text()
+
+    assert 'OPENPI_DEBUG_IO="${OPENPI_DEBUG_IO:-1}"' in infer_script
+    assert 'OPENPI_DEBUG_DIR="${OPENPI_DEBUG_DIR:-${PROJECT_ROOT}/openpi-arx-debug}"' in infer_script
+    assert 'mkdir -p "${ROS_LOG_DIR}" "${MPLCONFIGDIR}" "${OPENPI_DEBUG_DIR}"' in infer_script
+    assert 'OPENPI_DEBUG_IO="${OPENPI_DEBUG_IO:-1}"' in serve_script
+    assert 'OPENPI_DEBUG_DIR="${OPENPI_DEBUG_DIR:-${PROJECT_ROOT}/openpi-arx-debug}"' in serve_script
+
+
 def test_arx_config_reads_slave_feedback_and_publishes_master_commands():
     config = yaml.safe_load((ROOT / "third_party" / "ARX-ONE" / "act" / "data" / "config.yaml").read_text())
 

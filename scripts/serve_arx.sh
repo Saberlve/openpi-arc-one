@@ -11,6 +11,9 @@ CHECKPOINT_DIR="/home/ubuntu/openpi-arc-one/ckpt/pi05_arx/pick"
 PORT="${2:-8000}"
 DEFAULT_PROMPT="${DEFAULT_PROMPT:-Pick up the black pouch three times, then touch the green grommet}"
 CONFIG_NAME="${CONFIG_NAME:-pi05_arx}"
+OPENPI_DEBUG_IO="${OPENPI_DEBUG_IO:-1}"
+OPENPI_DEBUG_DIR="${OPENPI_DEBUG_DIR:-${PROJECT_ROOT}/openpi-arx-debug}"
+export OPENPI_DEBUG_IO OPENPI_DEBUG_DIR
 
 echo "============================================"
 echo "  OpenPi Policy Server (ARX-ONE)"
@@ -19,6 +22,8 @@ echo "  Config:      ${CONFIG_NAME}"
 echo "  Checkpoint:  ${CHECKPOINT_DIR}"
 echo "  Port:        ${PORT}"
 echo "  Prompt:      ${DEFAULT_PROMPT}"
+echo "  Debug IO:    ${OPENPI_DEBUG_IO}"
+echo "  Debug dir:   ${OPENPI_DEBUG_DIR}"
 echo "============================================"
 
 if [[ ! -d "${CHECKPOINT_DIR}" ]]; then
